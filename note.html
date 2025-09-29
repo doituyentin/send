@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="vi">
 <head>
@@ -106,27 +105,6 @@
     .music-btn svg{width:24px; height:24px; fill:white; transition:transform .3s ease}
     .music-btn.playing{animation:pulse 1.5s ease-in-out infinite}
     .music-btn.playing svg{animation:spin 3s linear infinite}
-    
-    /* arrow pointer */
-    .music-pointer{
-      position:fixed; bottom:90px; left:10px; z-index:199; display:flex; flex-direction:column; align-items:center; gap:4px;
-      animation:bouncePointer 1.5s ease-in-out infinite;
-    }
-    .music-pointer-text{
-      background:linear-gradient(135deg, #ff6b6b, #ff8a65); color:white; padding:6px 12px; border-radius:20px;
-      font-size:12px; font-weight:700; white-space:nowrap; box-shadow:0 4px 12px rgba(255,107,107,0.4);
-      transform:rotate(-8deg); position:relative;
-    }
-    .music-pointer-text:before{
-      content:''; position:absolute; bottom:-6px; left:20px; width:0; height:0;
-      border-left:6px solid transparent; border-right:6px solid transparent; border-top:8px solid #ff8a65;
-      transform:rotate(15deg);
-    }
-    .music-pointer-arrow{
-      font-size:28px; color:#ff6b6b; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-      animation:wiggle 0.8s ease-in-out infinite;
-    }
-    
     @keyframes pulse{
       0%, 100%{box-shadow:0 6px 20px rgba(0,0,0,0.2)}
       50%{box-shadow:0 6px 30px rgba(255,138,101,0.6), 0 0 40px rgba(255,138,101,0.4)}
@@ -134,15 +112,6 @@
     @keyframes spin{
       from{transform:rotate(0deg)}
       to{transform:rotate(360deg)}
-    }
-    @keyframes bouncePointer{
-      0%, 100%{transform:translateY(0)}
-      50%{transform:translateY(-8px)}
-    }
-    @keyframes wiggle{
-      0%, 100%{transform:rotate(0deg)}
-      25%{transform:rotate(-15deg)}
-      75%{transform:rotate(15deg)}
     }
 
     /* floating particles */
@@ -163,9 +132,6 @@
       .panel{right:12px; left:12px; width:auto; top:auto; bottom:12px; transform:none; max-height:70vh}
       .panel.show{animation:slideInUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)}
       .music-btn{bottom:16px; left:16px; width:48px; height:48px}
-      .music-pointer{bottom:70px; left:4px}
-      .music-pointer-text{font-size:11px; padding:5px 10px}
-      .music-pointer-arrow{font-size:24px}
       @keyframes slideInUp{
         from{opacity:0; transform:translateY(30px)}
         to{opacity:1; transform:translateY(0)}
@@ -174,12 +140,6 @@
   </style>
 </head>
 <body>
-  <!-- Music pointer arrow -->
-  <div class="music-pointer">
-    <div class="music-pointer-text">🎵 Phát nhạc ở đây!</div>
-    <div class="music-pointer-arrow">👇</div>
-  </div>
-
   <!-- Music button -->
   <button id="musicBtn" class="music-btn playing" aria-label="Phát nhạc" title="Click để tắt nhạc">
     <svg id="playIcon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:none">
