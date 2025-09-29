@@ -10,18 +10,67 @@
       --glass: rgba(255,255,255,0.6);
     }
     *{box-sizing:border-box; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
-    body{margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#f0f5ff 0%, #f6f2d4 100%); padding:32px; overflow:hidden}
+    body{
+      margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; 
+      background:#1a1a2e; padding:32px; overflow:hidden; position:relative;
+    }
 
-    .wrap{width:100%; max-width:95%; display:flex; align-items:center; justify-content:center; position:relative}
+    /* Animated gradient background */
+    body::before{
+      content:''; position:absolute; inset:0; z-index:0;
+      background:linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+      background-size:400% 400%; animation:gradientShift 15s ease infinite;
+    }
+    
+    /* Floating geometric shapes */
+    .bg-shape{
+      position:absolute; border-radius:50%; opacity:0.1; animation:floatShape 20s infinite ease-in-out;
+      background:linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
+      backdrop-filter:blur(20px);
+    }
+    .bg-shape:nth-child(1){width:300px; height:300px; top:10%; left:5%; animation-delay:0s; animation-duration:25s}
+    .bg-shape:nth-child(2){width:200px; height:200px; top:60%; right:10%; animation-delay:3s; animation-duration:20s}
+    .bg-shape:nth-child(3){width:150px; height:150px; bottom:15%; left:15%; animation-delay:6s; animation-duration:30s; border-radius:30%}
+    .bg-shape:nth-child(4){width:250px; height:250px; top:40%; right:25%; animation-delay:9s; animation-duration:22s; border-radius:20%}
+
+    @keyframes gradientShift{
+      0%, 100%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+    }
+    @keyframes floatShape{
+      0%, 100%{transform:translate(0, 0) rotate(0deg) scale(1)}
+      25%{transform:translate(30px, -30px) rotate(90deg) scale(1.1)}
+      50%{transform:translate(-20px, 40px) rotate(180deg) scale(0.9)}
+      75%{transform:translate(40px, 20px) rotate(270deg) scale(1.05)}
+    }
+
+    .wrap{width:100%; max-width:95%; display:flex; align-items:center; justify-content:center; position:relative; z-index:1}
 
     /* Note preview */
     .note-wrap{position:relative; display:flex; align-items:center; justify-content:center; padding:36px; max-width:600px}
     .note{
-      width:100%; min-height:360px; background:var(--note); border-radius:18px; padding:28px 30px; box-shadow: 10px 18px 30px var(--shadow);
-      transform: rotate(-2deg); transition:all .3s ease; position:relative; overflow:hidden;
+      width:100%; min-height:360px; background:var(--note); border-radius:18px; padding:28px 30px; 
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 100px rgba(255,255,255,0.1);
+      transform: rotate(-2deg); transition:all .4s cubic-bezier(0.34, 1.56, 0.64, 1); position:relative; overflow:hidden;
     }
-    .note:before{content:''; position:absolute; inset:0; pointer-events:none; background:linear-gradient(120deg, rgba(255,255,255,0.08), rgba(0,0,0,0.01)); mix-blend-mode:overlay}
-    .note .title{font-size:22px; font-weight:700; margin-bottom:8px}
+    .note:before{
+      content:''; position:absolute; inset:0; pointer-events:none; 
+      background:linear-gradient(120deg, rgba(255,255,255,0.2), rgba(0,0,0,0.05)); 
+      mix-blend-mode:overlay;
+    }
+    .note:after{
+      content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
+      background:radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+      opacity:0; transition:opacity 0.6s ease;
+    }
+    .note:hover:after{opacity:1; animation:shimmer 2s ease infinite}
+    
+    @keyframes shimmer{
+      0%{transform:translate(-50%, -50%) rotate(0deg)}
+      100%{transform:translate(50%, 50%) rotate(360deg)}
+    }
+    
+    .note .title{font-size:22px; font-weight:700; margin-bottom:8px; color:#2b2b2b; text-shadow:1px 1px 2px rgba(255,255,255,0.5)}
     .note .content{white-space:pre-wrap; font-size:18px; line-height:1.45; color:#2b2b2b}
     .note .signature{text-align:center; margin-top:24px; font-size:14px; color:#666; font-style:italic}
     
@@ -38,26 +87,52 @@
 
     /* controls */
     .panel{
-      background:rgba(255,255,255,0.95); border-radius:12px; padding:18px; box-shadow:0 10px 30px rgba(20,20,40,0.12); 
+      background:rgba(255,255,255,0.95); border-radius:12px; padding:18px; 
+      box-shadow:0 10px 30px rgba(20,20,40,0.3), 0 0 100px rgba(255,255,255,0.1); 
       display:none; position:fixed; top:50%; right:24px; transform:translateY(-50%); width:320px; max-height:90vh; overflow-y:auto;
-      z-index:100; backdrop-filter:blur(10px);
+      z-index:100; backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.3);
     }
     .panel.show{display:block; animation:slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)}
-    .panel h3{margin:0 0 12px 0}
-    label{display:block; font-size:13px; margin:10px 0 6px}
-    input[type=text], textarea, select{width:100%; padding:10px 12px; border-radius:8px; border:1px solid #e6e6e6; font-size:14px; transition:all .2s ease}
-    input[type=text]:focus, textarea:focus, select:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(255,138,101,0.1)}
+    .panel h3{margin:0 0 12px 0; color:#2b2b2b}
+    label{display:block; font-size:13px; margin:10px 0 6px; color:#444; font-weight:600}
+    input[type=text], textarea, select{
+      width:100%; padding:10px 12px; border-radius:8px; border:1px solid #e6e6e6; 
+      font-size:14px; transition:all .2s ease; background:rgba(255,255,255,0.9);
+    }
+    input[type=text]:focus, textarea:focus, select:focus{
+      outline:none; border-color:var(--accent); 
+      box-shadow:0 0 0 3px rgba(255,138,101,0.2), 0 4px 12px rgba(255,138,101,0.1);
+      background:white;
+    }
     textarea{min-height:140px; resize:vertical}
     .row{display:flex; gap:8px}
-    .btn{appearance:none; border:0; padding:10px 12px; border-radius:8px; cursor:pointer; font-weight:600; transition:all .2s ease}
-    .btn:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+    .btn{
+      appearance:none; border:0; padding:10px 12px; border-radius:8px; cursor:pointer; 
+      font-weight:600; transition:all .3s ease; position:relative; overflow:hidden;
+    }
+    .btn:before{
+      content:''; position:absolute; inset:0; background:rgba(255,255,255,0.3);
+      transform:translateX(-100%); transition:transform 0.3s ease;
+    }
+    .btn:hover:before{transform:translateX(100%)}
+    .btn:hover{transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.2)}
     .btn:active{transform:translateY(0)}
-    .btn-primary{background:var(--accent); color:white}
-    .btn-ghost{background:transparent; border:1px solid #ddd}
+    .btn-primary{background:linear-gradient(135deg, #ff8a65, #ff6b6b); color:white; box-shadow:0 4px 15px rgba(255,107,107,0.3)}
+    .btn-primary:hover{box-shadow:0 6px 25px rgba(255,107,107,0.4)}
+    .btn-ghost{background:rgba(255,255,255,0.8); border:1px solid #ddd; color:#333}
     .colors{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap}
-    .swatch{width:36px; height:36px; border-radius:8px; cursor:pointer; border:2px solid rgba(0,0,0,0.06); transition:all .2s ease; position:relative}
-    .swatch:hover{transform:scale(1.15); box-shadow:0 4px 12px rgba(0,0,0,0.2)}
-    .swatch.active:after{content:'✓'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; text-shadow:0 1px 3px rgba(0,0,0,0.5)}
+    .swatch{
+      width:36px; height:36px; border-radius:8px; cursor:pointer; 
+      border:2px solid rgba(255,255,255,0.5); transition:all .3s ease; position:relative;
+      box-shadow:0 2px 8px rgba(0,0,0,0.2);
+    }
+    .swatch:hover{transform:scale(1.2) rotate(10deg); box-shadow:0 4px 15px rgba(0,0,0,0.3)}
+    .swatch.active{border-color:#ff6b6b; border-width:3px; transform:scale(1.1)}
+    .swatch.active:after{
+      content:'✓'; position:absolute; inset:0; display:flex; align-items:center; 
+      justify-content:center; color:white; font-weight:bold; font-size:16px;
+      text-shadow:0 2px 4px rgba(0,0,0,0.5);
+    }
     .meta{margin-top:12px; color:#666; font-size:13px}
 
     /* animations */
@@ -85,24 +160,25 @@
     .note-wrap{animation:fadeInUp 1s ease-out 0.2s backwards}
     .note{animation:float 4s ease-in-out infinite}
     .sparkle{
-      position:absolute; width:6px; height:6px; background:white; border-radius:50%;
+      position:absolute; width:8px; height:8px; background:white; border-radius:50%;
       pointer-events:none; animation:sparkle 3s ease-in-out infinite;
-      box-shadow:0 0 10px rgba(255,255,255,0.8);
+      box-shadow:0 0 15px rgba(255,255,255,0.9), 0 0 30px currentColor;
     }
     .confetti{
-      position:fixed; width:10px; height:10px; pointer-events:none;
-      animation:confetti 3s linear forwards; z-index:1000;
+      position:fixed; width:12px; height:12px; pointer-events:none;
+      animation:confetti 3s linear forwards; z-index:1000; border-radius:2px;
     }
 
     /* music control */
     .music-btn{
       position:fixed; bottom:24px; left:24px; width:56px; height:56px; border-radius:50%;
-      background:var(--accent); border:0; cursor:pointer; display:flex; align-items:center;
-      justify-content:center; box-shadow:0 6px 20px rgba(0,0,0,0.2); z-index:200;
+      background:linear-gradient(135deg, #ff8a65, #ff6b6b); border:0; cursor:pointer; 
+      display:flex; align-items:center; justify-content:center; 
+      box-shadow:0 6px 25px rgba(255,107,107,0.4), 0 0 40px rgba(255,138,101,0.2); z-index:200;
       transition:all .3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
-    .music-btn:hover{transform:scale(1.15); box-shadow:0 8px 24px rgba(0,0,0,0.3)}
-    .music-btn svg{width:24px; height:24px; fill:white; transition:transform .3s ease}
+    .music-btn:hover{transform:scale(1.15); box-shadow:0 8px 30px rgba(255,107,107,0.5), 0 0 60px rgba(255,138,101,0.3)}
+    .music-btn svg{width:24px; height:24px; fill:white; transition:transform .3s ease; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2))}
     .music-btn.playing{animation:pulse 1.5s ease-in-out infinite}
     .music-btn.playing svg{animation:spin 3s linear infinite}
     
@@ -112,23 +188,24 @@
       animation:bouncePointer 1.5s ease-in-out infinite;
     }
     .music-pointer-text{
-      background:linear-gradient(135deg, #ff6b6b, #ff8a65); color:white; padding:6px 12px; border-radius:20px;
-      font-size:12px; font-weight:700; white-space:nowrap; box-shadow:0 4px 12px rgba(255,107,107,0.4);
-      transform:rotate(-8deg); position:relative;
+      background:linear-gradient(135deg, #667eea, #764ba2); color:white; padding:8px 14px; border-radius:20px;
+      font-size:13px; font-weight:700; white-space:nowrap; 
+      box-shadow:0 4px 15px rgba(102,126,234,0.5), 0 0 30px rgba(118,75,162,0.3);
+      transform:rotate(-8deg); position:relative; border:2px solid rgba(255,255,255,0.3);
     }
     .music-pointer-text:before{
-      content:''; position:absolute; bottom:-6px; left:20px; width:0; height:0;
-      border-left:6px solid transparent; border-right:6px solid transparent; border-top:8px solid #ff8a65;
-      transform:rotate(15deg);
+      content:''; position:absolute; bottom:-8px; left:22px; width:0; height:0;
+      border-left:8px solid transparent; border-right:8px solid transparent; border-top:10px solid #764ba2;
+      transform:rotate(15deg); filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2));
     }
     .music-pointer-arrow{
-      font-size:28px; color:#ff6b6b; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+      font-size:32px; filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3));
       animation:wiggle 0.8s ease-in-out infinite;
     }
     
     @keyframes pulse{
-      0%, 100%{box-shadow:0 6px 20px rgba(0,0,0,0.2)}
-      50%{box-shadow:0 6px 30px rgba(255,138,101,0.6), 0 0 40px rgba(255,138,101,0.4)}
+      0%, 100%{box-shadow:0 6px 25px rgba(255,107,107,0.4), 0 0 40px rgba(255,138,101,0.2)}
+      50%{box-shadow:0 6px 40px rgba(255,107,107,0.7), 0 0 80px rgba(255,138,101,0.5)}
     }
     @keyframes spin{
       from{transform:rotate(0deg)}
@@ -136,24 +213,24 @@
     }
     @keyframes bouncePointer{
       0%, 100%{transform:translateY(0)}
-      50%{transform:translateY(-8px)}
+      50%{transform:translateY(-10px)}
     }
     @keyframes wiggle{
-      0%, 100%{transform:rotate(0deg)}
-      25%{transform:rotate(-15deg)}
-      75%{transform:rotate(15deg)}
+      0%, 100%{transform:rotate(0deg) scale(1)}
+      25%{transform:rotate(-20deg) scale(1.1)}
+      75%{transform:rotate(20deg) scale(1.1)}
     }
 
     /* floating particles */
     .particle{
-      position:fixed; width:4px; height:4px; background:rgba(255,255,255,0.6);
-      border-radius:50%; pointer-events:none; animation:floatParticle 15s infinite;
+      position:fixed; border-radius:50%; pointer-events:none; animation:floatParticle 15s infinite;
+      box-shadow:0 0 10px currentColor;
     }
     @keyframes floatParticle{
-      0%{transform:translateY(100vh) translateX(0) scale(0); opacity:0}
+      0%{transform:translateY(100vh) translateX(0) scale(0) rotate(0deg); opacity:0}
       10%{opacity:1}
       90%{opacity:1}
-      100%{transform:translateY(-100vh) translateX(100px) scale(1); opacity:0}
+      100%{transform:translateY(-100vh) translateX(100px) scale(1) rotate(360deg); opacity:0}
     }
 
     /* responsive */
@@ -163,8 +240,8 @@
       .panel.show{animation:slideInUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)}
       .music-btn{bottom:16px; left:16px; width:48px; height:48px}
       .music-pointer{bottom:70px; left:4px}
-      .music-pointer-text{font-size:11px; padding:5px 10px}
-      .music-pointer-arrow{font-size:24px}
+      .music-pointer-text{font-size:11px; padding:6px 10px}
+      .music-pointer-arrow{font-size:26px}
       @keyframes slideInUp{
         from{opacity:0; transform:translateY(30px)}
         to{opacity:1; transform:translateY(0)}
@@ -173,6 +250,12 @@
   </style>
 </head>
 <body>
+  <!-- Background shapes -->
+  <div class="bg-shape"></div>
+  <div class="bg-shape"></div>
+  <div class="bg-shape"></div>
+  <div class="bg-shape"></div>
+
   <!-- Music pointer arrow -->
   <div class="music-pointer">
     <div class="music-pointer-text">🎵 Phát nhạc ở đây!</div>
@@ -208,15 +291,15 @@
     </div>
 
     <div class="panel" aria-hidden="false">
-      <h3>Chỉnh sửa Note</h3>
+      <h3>✨ Chỉnh sửa Note</h3>
 
-      <label for="titleInput">Tiêu đề</label>
+      <label for="titleInput">📝 Tiêu đề</label>
       <input id="titleInput" type="text" placeholder="Ví dụ: Gửi đội tuyển tin" />
 
-      <label for="contentInput">Nội dung (dùng Enter để xuống dòng)</label>
+      <label for="contentInput">💬 Nội dung (dùng Enter để xuống dòng)</label>
       <textarea id="contentInput" placeholder="Viết lời chúc..." ></textarea>
 
-      <label>Màu nền note</label>
+      <label>🎨 Màu nền note</label>
       <div class="colors">
         <button class="swatch active" data-color="#fff6b2" style="background:#fff6b2" title="Vàng nhạt"></button>
         <button class="swatch" data-color="#ffd7e2" style="background:#ffd7e2" title="Hồng pastel"></button>
@@ -226,7 +309,7 @@
         <button class="swatch" data-color="#ffe4e1" style="background:#ffe4e1" title="Hồng đào"></button>
       </div>
 
-      <label for="fontSelect">Phông chữ</label>
+      <label for="fontSelect">✍️ Phông chữ</label>
       <select id="fontSelect">
         <option value="Inter, system-ui, -apple-system, 'Segoe UI', Roboto">Inter (mặc định)</option>
         <option value="'Segoe Script', cursive">Segoe Script (viết tay)</option>
@@ -234,10 +317,10 @@
       </select>
 
       <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap">
-        <button id="saveBtn" class="btn btn-primary">Lưu (Local)</button>
-        <button id="downloadBtn" class="btn btn-ghost">Tải HTML</button>
-        <button id="printBtn" class="btn btn-ghost">In / Xuất PDF</button>
-        <button id="resetBtn" class="btn btn-ghost">Đặt lại</button>
+        <button id="saveBtn" class="btn btn-primary">💾 Lưu</button>
+        <button id="downloadBtn" class="btn btn-ghost">⬇️ Tải HTML</button>
+        <button id="printBtn" class="btn btn-ghost">🖨️ In/PDF</button>
+        <button id="resetBtn" class="btn btn-ghost">🔄 Đặt lại</button>
       </div>
 
       <div class="meta">© 2025 Đội tuyển Tin</div>
@@ -267,37 +350,67 @@
     const STORAGE_KEY = 'note_loi_chuc_v1';
     let isPlaying = false;
 
+    // Color themes for matching note colors
+    const colorThemes = {
+      '#fff6b2': { accent: '#ffb347', sparkle: '#ffd700' }, // Vàng
+      '#ffd7e2': { accent: '#ff69b4', sparkle: '#ff1493' }, // Hồng
+      '#d6f8e8': { accent: '#3cb371', sparkle: '#00fa9a' }, // Xanh mint
+      '#dfe7ff': { accent: '#6a5acd', sparkle: '#7b68ee' }, // Xanh lavender
+      '#fff3d1': { accent: '#ffa500', sparkle: '#ffd700' }, // Kem
+      '#ffe4e1': { accent: '#ff6b9d', sparkle: '#ff1493' }  // Hồng đào
+    };
+
     // Create sparkles
     function createSparkles(){
       const wrap = document.querySelector('.note-wrap');
-      for(let i=0; i<12; i++){
+      const existingSparkles = wrap.querySelectorAll('.sparkle');
+      existingSparkles.forEach(s => s.remove());
+      
+      const currentColor = note.style.background || '#fff6b2';
+      const theme = colorThemes[currentColor] || colorThemes['#fff6b2'];
+      
+      for(let i=0; i<15; i++){
         const sparkle = document.createElement('div');
         sparkle.className = 'sparkle';
         sparkle.style.left = Math.random() * 100 + '%';
         sparkle.style.top = Math.random() * 100 + '%';
         sparkle.style.animationDelay = Math.random() * 3 + 's';
-        const hue = Math.random() * 60 + 40;
-        sparkle.style.background = `hsl(${hue}, 100%, 70%)`;
+        sparkle.style.width = (4 + Math.random() * 4) + 'px';
+        sparkle.style.height = sparkle.style.width;
+        sparkle.style.color = theme.sparkle;
         wrap.appendChild(sparkle);
       }
     }
 
     // Create floating particles
     function createParticles(){
-      for(let i=0; i<15; i++){
+      const existingParticles = document.querySelectorAll('.particle');
+      existingParticles.forEach(p => p.remove());
+      
+      const currentColor = note.style.background || '#fff6b2';
+      const theme = colorThemes[currentColor] || colorThemes['#fff6b2'];
+      
+      for(let i=0; i<20; i++){
         const particle = document.createElement('div');
         particle.className = 'particle';
         particle.style.left = Math.random() * 100 + '%';
         particle.style.animationDelay = Math.random() * 15 + 's';
         particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+        particle.style.width = (3 + Math.random() * 5) + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.background = theme.accent;
+        particle.style.color = theme.accent;
         document.body.appendChild(particle);
       }
     }
 
     // Create confetti effect
     function createConfetti(){
-      const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#a29bfe'];
-      for(let i=0; i<30; i++){
+      const currentColor = note.style.background || '#fff6b2';
+      const theme = colorThemes[currentColor] || colorThemes['#fff6b2'];
+      const colors = [theme.accent, theme.sparkle, '#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7'];
+      
+      for(let i=0; i<40; i++){
         const confetti = document.createElement('div');
         confetti.className = 'confetti';
         confetti.style.left = Math.random() * 100 + '%';
@@ -355,27 +468,9 @@
 
     // Update edit button color based on note background
     function updateEditButtonColor(bgColor){
-      const tempDiv = document.createElement('div');
-      tempDiv.style.color = bgColor;
-      document.body.appendChild(tempDiv);
-      const rgb = window.getComputedStyle(tempDiv).color;
-      document.body.removeChild(tempDiv);
-      
-      const values = rgb.match(/\d+/g);
-      if(values){
-        const r = parseInt(values[0]);
-        const g = parseInt(values[1]);
-        const b = parseInt(values[2]);
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        
-        if(brightness > 200){
-          editBtn.style.background = '#ff6b6b';
-        } else if(brightness > 150){
-          editBtn.style.background = '#e74c3c';
-        } else {
-          editBtn.style.background = '#ff8a65';
-        }
-      }
+      const theme = colorThemes[bgColor] || colorThemes['#fff6b2'];
+      editBtn.style.background = theme.accent;
+      editBtn.style.boxShadow = `0 4px 15px ${theme.accent}40`;
     }
 
     // Load defaults or saved
@@ -385,101 +480,4 @@
         try { const s = JSON.parse(raw);
           titleEl.textContent = s.title || titleEl.textContent;
           contentEl.textContent = s.content || contentEl.textContent;
-          const bgColor = s.bg || getComputedStyle(document.documentElement).getPropertyValue('--note');
-          note.style.background = bgColor;
-          updateEditButtonColor(bgColor);
-          note.style.fontFamily = s.font || '';
-          titleInput.value = s.title || titleInput.value;
-          contentInput.value = s.content || contentInput.value;
-          fontSelect.value = s.font || fontSelect.value;
-          
-          swatches.forEach(sw => {
-            sw.classList.remove('active');
-            if(sw.dataset.color === s.bg) sw.classList.add('active');
-          });
-        } catch(e){console.warn('Không thể đọc lưu trữ', e)}
-      } else {
-        titleInput.value = titleEl.textContent;
-        contentInput.value = contentEl.textContent;
-      }
-    }
-
-    // Update preview
-    function updatePreview(){
-      titleEl.textContent = titleInput.value || 'Gửi đội tuyển tin,';
-      contentEl.textContent = contentInput.value || 'Chúc các thành viên đội tuyển Tin học tự tin, bình tĩnh và tỏa sáng trong kì thi chọn đội dự tuyển HSG Quốc gia! Hãy phát huy hết khả năng, tư duy logic sắc bén và tinh thần đồng đội vững mạnh. Chúc các bạn đạt kết quả cao và mang vinh quang về cho đội tuyển!';
-      note.style.fontFamily = fontSelect.value;
-    }
-
-    // events
-    titleInput.addEventListener('input', updatePreview);
-    contentInput.addEventListener('input', updatePreview);
-    fontSelect.addEventListener('change', updatePreview);
-
-    swatches.forEach(s => s.addEventListener('click', () => {
-      const c = s.dataset.color;
-      note.style.background = c;
-      updateEditButtonColor(c);
-      swatches.forEach(sw => sw.classList.remove('active'));
-      s.classList.add('active');
-      
-      // Add pulse effect to note
-      note.style.transform = 'rotate(-2deg) scale(1.05)';
-      setTimeout(() => {
-        note.style.transform = 'rotate(-2deg) scale(1)';
-      }, 200);
-    }));
-
-    saveBtn.addEventListener('click', ()=>{
-      const payload = {
-        title: titleInput.value,
-        content: contentInput.value,
-        bg: note.style.background || '',
-        font: fontSelect.value
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-      saveBtn.textContent = 'Đã lưu ✓';
-      createConfetti();
-      setTimeout(()=> saveBtn.textContent = 'Lưu (Local)', 1500);
-    });
-
-    downloadBtn.addEventListener('click', ()=>{
-      const doc = `<!doctype html><meta charset=\"utf-8\"><title>Note - Lời chúc</title><style>body{margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:#f6f6f6} .note{padding:28px;border-radius:14px;max-width:800px;white-space:pre-wrap; font-family:${fontSelect.value}; background:${note.style.background || '#fff6b2'}} .signature{text-align:center;margin-top:24px;font-size:14px;color:#666;font-style:italic}</style><div class=\"note\"><h2>${escapeHtml(titleInput.value)}</h2><div>${escapeHtml(contentInput.value).replace(/\n/g,'<br>')}</div><div class=\"signature\">-By Đội Tuyển Tin-</div></div>`;
-      const blob = new Blob([doc], {type:'text/html'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'loi-chuc-note.html'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-      createConfetti();
-    });
-
-    printBtn.addEventListener('click', ()=>{
-      const w = window.open('', '_blank');
-      const html = `<!doctype html><meta charset=\"utf-8\"><title>In lời chúc</title><style>body{margin:40px;font-family:${fontSelect.value}} .signature{text-align:center;margin-top:24px;font-size:14px;color:#666;font-style:italic}</style><div>${escapeHtml(titleInput.value)}<br><br>${escapeHtml(contentInput.value).replace(/\n/g,'<br>')}<div class=\"signature\">-By Đội Tuyển Tin-</div></div>`;
-      w.document.open(); w.document.write(html); w.document.close();
-      setTimeout(()=> w.print(), 300);
-    });
-
-    resetBtn.addEventListener('click', ()=>{
-      if(!confirm('Bạn có chắc muốn đặt lại về mặc định?')) return;
-      localStorage.removeItem(STORAGE_KEY);
-      titleInput.value = 'Gửi đội tuyển tin,';
-      contentInput.value = 'Chúc các thành viên đội tuyển Tin học tự tin, bình tĩnh và tỏa sáng trong kì thi chọn đội dự tuyển HSG Quốc gia! Hãy phát huy hết khả năng, tư duy logic sắc bén và tinh thần đồng đội vững mạnh. Chúc các bạn đạt kết quả cao và mang vinh quang về cho đội tuyển!';
-      note.style.background = '#fff6b2';
-      updateEditButtonColor('#fff6b2');
-      fontSelect.value = "Inter, system-ui, -apple-system, 'Segoe UI', Roboto";
-      swatches.forEach(sw => sw.classList.remove('active'));
-      swatches[0].classList.add('active');
-      updatePreview();
-    });
-
-    // helpers
-    function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;'); }
-
-    // initialize
-    createSparkles();
-    createParticles();
-    load(); 
-    updatePreview();
-  </script>
-</body>
-</html>
+          const bgColor = s.bg || '#fff
