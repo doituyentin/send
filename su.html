@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Đội Tuyển Tin - Note</title>
+  <style>
+    :root{
+      --bg:#f6f2d4; --note:#fff6b2; --accent:#ff8a65; --shadow:rgba(0,0,0,0.18);
+      --glass: rgba(255,255,255,0.6);
+    }
+    *{box-sizing:border-box; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    body{margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#f0f5ff 0%, #f6f2d4 100%); padding:32px; overflow:hidden}
+
+    .wrap{width:100%; max-width:95%; display:flex; align-items:center; justify-content:center; position:relative}
+
+    /* Note preview */
+    .note-wrap{position:relative; display:flex; align-items:center; justify-content:center; padding:36px; max-width:600px}
+    .note{
+      width:100%; min-height:360px; background:var(--note); border-radius:18px; padding:28px 30px; box-shadow: 10px 18px 30px var(--shadow);
+      transform: rotate(-2deg); transition:all .3s ease; position:relative; overflow:hidden;
+    }
+    .note:before{content:''; position:absolute; inset:0; pointer-events:none; background:linear-gradient(120deg, rgba(255,255,255,0.08), rgba(0,0,0,0.01)); mix-blend-mode:overlay}
+    .note .title{font-size:22px; font-weight:700; margin-bottom:8px}
+    .note .content{white-space:pre-wrap; font-size:18px; line-height:1.45; color:#2b2b2b}
+    .note .signature{text-align:center; margin-top:24px; font-size:14px; color:#666; font-style:italic}
+    
+    .edit-btn{
+      position:absolute; top:16px; right:16px; width:44px; height:44px; border-radius:50%; 
+      background:var(--accent); border:0; cursor:pointer; display:flex; align-items:center; 
+      justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.15);
+      transition:all .3s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index:10;
+    }
+    .edit-btn:hover{transform:scale(1.15) rotate(90deg); box-shadow:0 8px 20px rgba(0,0,0,0.25)}
+    .edit-btn:active{transform:scale(0.95) rotate(90deg)}
+    .edit-btn svg{width:20px; height:20px; fill:white; transition:transform .3s ease}
+    .edit-btn:hover svg{transform:rotate(-90deg)}
+
+    /* controls */
+    .panel{
+      background:rgba(255,255,255,0.95); border-radius:12px; padding:18px; box-shadow:0 10px 30px rgba(20,20,40,0.12); 
+      display:none; position:fixed; top:50%; right:24px; transform:translateY(-50%); width:320px; max-height:90vh; overflow-y:auto;
+      z-index:100; backdrop-filter:blur(10px);
+    }
+    .panel.show{display:block; animation:slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)}
+    .panel h3{margin:0 0 12px 0}
+    label{display:block; font-size:13px; margin:10px 0 6px}
+    input[type=text], textarea, select{width:100%; padding:10px 12px; border-radius:8px; border:1px solid #e6e6e6; font-size:14px; transition:all .2s ease}
+    input[type=text]:focus, textarea:focus, select:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(255,138,101,0.1)}
+    textarea{min-height:140px; resize:vertical}
+    .row{display:flex; gap:8px}
+    .btn{appearance:none; border:0; padding:10px 12px; border-radius:8px; cursor:pointer; font-weight:600; transition:all .2s ease}
+    .btn:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+    .btn:active{transform:translateY(0)}
+    .btn-primary{background:var(--accent); color:white}
+    .btn-ghost{background:transparent; border:1px solid #ddd}
+    .colors{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap}
+    .swatch{width:36px; height:36px; border-radius:8px; cursor:pointer; border:2px solid rgba(0,0,0,0.06); transition:all .2s ease; position:relative}
+    .swatch:hover{transform:scale(1.15); box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+    .swatch.active:after{content:'✓'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; text-shadow:0 1px 3px rgba(0,0,0,0.5)}
+    .meta{margin-top:12px; color:#666; font-size:13px}
+
+    /* animations */
+    @keyframes fadeInUp{
+      from{opacity:0; transform:translateY(30px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+    @keyframes slideInRight{
+      from{opacity:0; transform:translateY(-50%) translateX(30px)}
+      to{opacity:1; transform:translateY(-50%) translateX(0)}
+    }
+    @keyframes float{
+      0%, 100%{transform:translateY(0) rotate(-2deg)}
+      50%{transform:translateY(-10px) rotate(-2deg)}
+    }
+    @keyframes sparkle{
+      0%, 100%{opacity:0; transform:scale(0) rotate(0deg)}
+      50%{opacity:1; transform:scale(1) rotate(180deg)}
+    }
+    @keyframes confetti{
+      0%{transform:translateY(-100vh) rotate(0deg); opacity:1}
+      100%{transform:translateY(100vh) rotate(720deg); opacity:0}
+    }
+    body{animation:fadeInUp 0.8s ease-out}
+    .note-wrap{animation:fadeInUp 1s ease-out 0.2s backwards}
+    .note{animation:float 4s ease-in-out infinite}
+    .sparkle{
+      position:absolute; width:6px; height:6px; background:white; border-radius:50%;
+      pointer-events:none; animation:sparkle 3s ease-in-out infinite;
+      box-shadow:0 0 10px rgba(255,255,255,0.8);
+    }
+    .confetti{
+      position:fixed; width:10px; height:10px; pointer-events:none;
+      animation:confetti 3s linear forwards; z-index:1000;
+    }
+
+    /* music control */
+    .music-btn{
+      position:fixed; bottom:24px; left:24px; width:56px; height:56px; border-radius:50%;
+      background:var(--accent); border:0; cursor:pointer; display:flex; align-items:center;
+      justify-content:center; box-shadow:0 6px 20px rgba(0,0,0,0.2); z-index:200;
+      transition:all .3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    .music-btn:hover{transform:scale(1.15); box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+    .music-btn svg{width:24px; height:24px; fill:white; transition:transform .3s ease}
+    .music-btn.playing{animation:pulse 1.5s ease-in-out infinite}
+    .music-btn.playing svg{animation:spin 3s linear infinite}
+    @keyframes pulse{
+      0%, 100%{box-shadow:0 6px 20px rgba(0,0,0,0.2)}
+      50%{box-shadow:0 6px 30px rgba(255,138,101,0.6), 0 0 40px rgba(255,138,101,0.4)}
+    }
+    @keyframes spin{
+      from{transform:rotate(0deg)}
+      to{transform:rotate(360deg)}
+    }
+
+    /* floating particles */
+    .particle{
+      position:fixed; width:4px; height:4px; background:rgba(255,255,255,0.6);
+      border-radius:50%; pointer-events:none; animation:floatParticle 15s infinite;
+    }
+    @keyframes floatParticle{
+      0%{transform:translateY(100vh) translateX(0) scale(0); opacity:0}
+      10%{opacity:1}
+      90%{opacity:1}
+      100%{transform:translateY(-100vh) translateX(100px) scale(1); opacity:0}
+    }
+
+    /* responsive */
+    @media (max-width:880px){
+      .note{min-height:320px}
+      .panel{right:12px; left:12px; width:auto; top:auto; bottom:12px; transform:none; max-height:70vh}
+      .panel.show{animation:slideInUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)}
+      .music-btn{bottom:16px; left:16px; width:48px; height:48px}
+      @keyframes slideInUp{
+        from{opacity:0; transform:translateY(30px)}
+        to{opacity:1; transform:translateY(0)}
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Music button -->
+  <button id="musicBtn" class="music-btn playing" aria-label="Phát nhạc" title="Click để tắt nhạc">
+    <svg id="playIcon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:none">
+      <path d="M8 5v14l11-7z"/>
+    </svg>
+    <svg id="pauseIcon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+    </svg>
+  </button>
+
+  <audio id="bgMusic" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="wrap">
+    <div class="note-wrap">
+      <div id="note" class="note" role="region" aria-label="Preview note">
+        <div class="title" id="noteTitle">Gửi đội tuyển tin</div>
+        <div class="content" id="noteContent">Chúc các thành viên đội tuyển Tin học tự tin, bình tĩnh và tỏa sáng trong kì thi chọn đội dự tuyển HSG Quốc gia! Hãy phát huy hết khả năng, tư duy logic sắc bén và tinh thần đồng đội vững mạnh. Chúc các bạn đạt kết quả cao và mang vinh quang về cho đội tuyển!</div>
+        <div class="signature">-By Đội Tuyển Tin-</div>
+      </div>
+      <button id="editBtn" class="edit-btn" aria-label="Chỉnh sửa" title="Chỉnh sửa lời chúc">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="panel" aria-hidden="false">
+      <h3>Chỉnh sửa lời chúc</h3>
+
+      <label for="titleInput">Tiêu đề</label>
+      <input id="titleInput" type="text" placeholder="Ví dụ: Gửi đội tuyển tin" />
+
+      <label for="contentInput">Nội dung (dùng Enter để xuống dòng)</label>
+      <textarea id="contentInput" placeholder="Viết lời chúc..." ></textarea>
+
+      <label>Màu nền note</label>
+      <div class="colors">
+        <button class="swatch active" data-color="#fff6b2" style="background:#fff6b2" title="Vàng nhạt"></button>
+        <button class="swatch" data-color="#ffd7e2" style="background:#ffd7e2" title="Hồng pastel"></button>
+        <button class="swatch" data-color="#d6f8e8" style="background:#d6f8e8" title="Xanh mint"></button>
+        <button class="swatch" data-color="#dfe7ff" style="background:#dfe7ff" title="Xanh lavender"></button>
+        <button class="swatch" data-color="#fff3d1" style="background:#fff3d1" title="Kem"></button>
+        <button class="swatch" data-color="#ffe4e1" style="background:#ffe4e1" title="Hồng đào"></button>
+      </div>
+
+      <label for="fontSelect">Phông chữ</label>
+      <select id="fontSelect">
+        <option value="Inter, system-ui, -apple-system, 'Segoe UI', Roboto">Inter (mặc định)</option>
+        <option value="'Segoe Script', cursive">Segoe Script (viết tay)</option>
+        <option value="Georgia, 'Times New Roman', serif">Georgia (trang trọng)</option>
+      </select>
+
+      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap">
+        <button id="saveBtn" class="btn btn-primary">Lưu (Local)</button>
+        <button id="downloadBtn" class="btn btn-ghost">Tải HTML</button>
+        <button id="printBtn" class="btn btn-ghost">In / Xuất PDF</button>
+        <button id="resetBtn" class="btn btn-ghost">Đặt lại</button>
+      </div>
+
+      <div class="meta">© 2025 Đội tuyển Tin</div>
+    </div>
+  </div>
+
+  <script>
+    // Elements
+    const note = document.getElementById('note');
+    const titleEl = document.getElementById('noteTitle');
+    const contentEl = document.getElementById('noteContent');
+    const titleInput = document.getElementById('titleInput');
+    const contentInput = document.getElementById('contentInput');
+    const fontSelect = document.getElementById('fontSelect');
+    const swatches = document.querySelectorAll('.swatch');
+    const saveBtn = document.getElementById('saveBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const printBtn = document.getElementById('printBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const editBtn = document.getElementById('editBtn');
+    const panel = document.querySelector('.panel');
+    const musicBtn = document.getElementById('musicBtn');
+    const bgMusic = document.getElementById('bgMusic');
+    const playIcon = document.getElementById('playIcon');
+    const pauseIcon = document.getElementById('pauseIcon');
+
+    const STORAGE_KEY = 'note_loi_chuc_v1';
+    let isPlaying = false;
+
+    // Create sparkles
+    function createSparkles(){
+      const wrap = document.querySelector('.note-wrap');
+      for(let i=0; i<12; i++){
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = Math.random() * 100 + '%';
+        sparkle.style.top = Math.random() * 100 + '%';
+        sparkle.style.animationDelay = Math.random() * 3 + 's';
+        const hue = Math.random() * 60 + 40;
+        sparkle.style.background = `hsl(${hue}, 100%, 70%)`;
+        wrap.appendChild(sparkle);
+      }
+    }
+
+    // Create floating particles
+    function createParticles(){
+      for(let i=0; i<15; i++){
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 15 + 's';
+        particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+        document.body.appendChild(particle);
+      }
+    }
+
+    // Create confetti effect
+    function createConfetti(){
+      const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#a29bfe'];
+      for(let i=0; i<30; i++){
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 0.5 + 's';
+        confetti.style.animationDuration = (2 + Math.random() * 1) + 's';
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 3500);
+      }
+    }
+
+    // Auto play music on load
+    window.addEventListener('load', () => {
+      bgMusic.play().then(() => {
+        isPlaying = true;
+        musicBtn.classList.add('playing');
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = 'block';
+        musicBtn.title = 'Click để tắt nhạc';
+      }).catch(e => {
+        console.log('Trình duyệt chặn auto-play:', e);
+        isPlaying = false;
+        musicBtn.classList.remove('playing');
+        playIcon.style.display = 'block';
+        pauseIcon.style.display = 'none';
+        musicBtn.title = 'Click để bật nhạc';
+      });
+    });
+
+    // Music control
+    musicBtn.addEventListener('click', ()=>{
+      if(isPlaying){
+        bgMusic.pause();
+        playIcon.style.display = 'block';
+        pauseIcon.style.display = 'none';
+        musicBtn.classList.remove('playing');
+        musicBtn.title = 'Click để bật nhạc';
+      } else {
+        bgMusic.play().catch(e => console.log('Không thể phát nhạc:', e));
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = 'block';
+        musicBtn.classList.add('playing');
+        musicBtn.title = 'Click để tắt nhạc';
+      }
+      isPlaying = !isPlaying;
+    });
+
+    // Set volume
+    bgMusic.volume = 0.3;
+
+    // Toggle panel
+    editBtn.addEventListener('click', ()=>{
+      panel.classList.toggle('show');
+    });
+
+    // Update edit button color based on note background
+    function updateEditButtonColor(bgColor){
+      const tempDiv = document.createElement('div');
+      tempDiv.style.color = bgColor;
+      document.body.appendChild(tempDiv);
+      const rgb = window.getComputedStyle(tempDiv).color;
+      document.body.removeChild(tempDiv);
+      
+      const values = rgb.match(/\d+/g);
+      if(values){
+        const r = parseInt(values[0]);
+        const g = parseInt(values[1]);
+        const b = parseInt(values[2]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        
+        if(brightness > 200){
+          editBtn.style.background = '#ff6b6b';
+        } else if(brightness > 150){
+          editBtn.style.background = '#e74c3c';
+        } else {
+          editBtn.style.background = '#ff8a65';
+        }
+      }
+    }
+
+    // Load defaults or saved
+    function load() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) {
+        try { const s = JSON.parse(raw);
+          titleEl.textContent = s.title || titleEl.textContent;
+          contentEl.textContent = s.content || contentEl.textContent;
+          const bgColor = s.bg || getComputedStyle(document.documentElement).getPropertyValue('--note');
+          note.style.background = bgColor;
+          updateEditButtonColor(bgColor);
+          note.style.fontFamily = s.font || '';
+          titleInput.value = s.title || titleInput.value;
+          contentInput.value = s.content || contentInput.value;
+          fontSelect.value = s.font || fontSelect.value;
+          
+          swatches.forEach(sw => {
+            sw.classList.remove('active');
+            if(sw.dataset.color === s.bg) sw.classList.add('active');
+          });
+        } catch(e){console.warn('Không thể đọc lưu trữ', e)}
+      } else {
+        titleInput.value = titleEl.textContent;
+        contentInput.value = contentEl.textContent;
+      }
+    }
+
+    // Update preview
+    function updatePreview(){
+      titleEl.textContent = titleInput.value || 'Gửi đội tuyển tin,';
+      contentEl.textContent = contentInput.value || 'Chúc các thành viên đội tuyển Tin học tự tin, bình tĩnh và tỏa sáng trong kì thi chọn đội dự tuyển HSG Quốc gia! Hãy phát huy hết khả năng, tư duy logic sắc bén và tinh thần đồng đội vững mạnh. Chúc các bạn đạt kết quả cao và mang vinh quang về cho đội tuyển!';
+      note.style.fontFamily = fontSelect.value;
+    }
+
+    // events
+    titleInput.addEventListener('input', updatePreview);
+    contentInput.addEventListener('input', updatePreview);
+    fontSelect.addEventListener('change', updatePreview);
+
+    swatches.forEach(s => s.addEventListener('click', () => {
+      const c = s.dataset.color;
+      note.style.background = c;
+      updateEditButtonColor(c);
+      swatches.forEach(sw => sw.classList.remove('active'));
+      s.classList.add('active');
+      
+      // Add pulse effect to note
+      note.style.transform = 'rotate(-2deg) scale(1.05)';
+      setTimeout(() => {
+        note.style.transform = 'rotate(-2deg) scale(1)';
+      }, 200);
+    }));
+
+    saveBtn.addEventListener('click', ()=>{
+      const payload = {
+        title: titleInput.value,
+        content: contentInput.value,
+        bg: note.style.background || '',
+        font: fontSelect.value
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      saveBtn.textContent = 'Đã lưu ✓';
+      createConfetti();
+      setTimeout(()=> saveBtn.textContent = 'Lưu (Local)', 1500);
+    });
+
+    downloadBtn.addEventListener('click', ()=>{
+      const doc = `<!doctype html><meta charset=\"utf-8\"><title>Note - Lời chúc</title><style>body{margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:#f6f6f6} .note{padding:28px;border-radius:14px;max-width:800px;white-space:pre-wrap; font-family:${fontSelect.value}; background:${note.style.background || '#fff6b2'}} .signature{text-align:center;margin-top:24px;font-size:14px;color:#666;font-style:italic}</style><div class=\"note\"><h2>${escapeHtml(titleInput.value)}</h2><div>${escapeHtml(contentInput.value).replace(/\n/g,'<br>')}</div><div class=\"signature\">-By Đội Tuyển Tin-</div></div>`;
+      const blob = new Blob([doc], {type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'loi-chuc-note.html'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      createConfetti();
+    });
+
+    printBtn.addEventListener('click', ()=>{
+      const w = window.open('', '_blank');
+      const html = `<!doctype html><meta charset=\"utf-8\"><title>In lời chúc</title><style>body{margin:40px;font-family:${fontSelect.value}} .signature{text-align:center;margin-top:24px;font-size:14px;color:#666;font-style:italic}</style><div>${escapeHtml(titleInput.value)}<br><br>${escapeHtml(contentInput.value).replace(/\n/g,'<br>')}<div class=\"signature\">-By Đội Tuyển Tin-</div></div>`;
+      w.document.open(); w.document.write(html); w.document.close();
+      setTimeout(()=> w.print(), 300);
+    });
+
+    resetBtn.addEventListener('click', ()=>{
+      if(!confirm('Bạn có chắc muốn đặt lại về mặc định?')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      titleInput.value = 'Gửi đội tuyển tin,';
+      contentInput.value = 'Chúc các thành viên đội tuyển Tin học tự tin, bình tĩnh và tỏa sáng trong kì thi chọn đội dự tuyển HSG Quốc gia! Hãy phát huy hết khả năng, tư duy logic sắc bén và tinh thần đồng đội vững mạnh. Chúc các bạn đạt kết quả cao và mang vinh quang về cho đội tuyển!';
+      note.style.background = '#fff6b2';
+      updateEditButtonColor('#fff6b2');
+      fontSelect.value = "Inter, system-ui, -apple-system, 'Segoe UI', Roboto";
+      swatches.forEach(sw => sw.classList.remove('active'));
+      swatches[0].classList.add('active');
+      updatePreview();
+    });
+
+    // helpers
+    function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;'); }
+
+    // initialize
+    createSparkles();
+    createParticles();
+    load(); 
+    updatePreview();
+  </script>
+</body>
+</html>
