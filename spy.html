@@ -1,8 +1,7 @@
-<!doctype html>
-<html lang="vi">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+<!DOCTYPE html>
+<html lang="vi"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Đội Tuyển Tin - Note</title>
   <style>
     :root{
@@ -11,10 +10,7 @@
     }
     *{box-sizing:border-box; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
     body{margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#f0f5ff 0%, #f6f2d4 100%); padding:32px; overflow:hidden}
-
     .wrap{width:100%; max-width:95%; display:flex; align-items:center; justify-content:center; position:relative}
-
-    /* Note preview */
     .note-wrap{position:relative; display:flex; align-items:center; justify-content:center; padding:36px; max-width:600px}
     .note{
       width:100%; min-height:360px; background:var(--note); border-radius:18px; padding:28px 30px; box-shadow: 10px 18px 30px var(--shadow);
@@ -24,7 +20,6 @@
     .note .title{font-size:22px; font-weight:700; margin-bottom:8px}
     .note .content{white-space:pre-wrap; font-size:18px; line-height:1.45; color:#2b2b2b}
     .note .signature{text-align:center; margin-top:24px; font-size:14px; color:#666; font-style:italic}
-    
     .edit-btn{
       position:absolute; top:16px; right:16px; width:44px; height:44px; border-radius:50%; 
       background:var(--accent); border:0; cursor:pointer; display:flex; align-items:center; 
@@ -35,8 +30,6 @@
     .edit-btn:active{transform:scale(0.95) rotate(90deg)}
     .edit-btn svg{width:20px; height:20px; fill:white; transition:transform .3s ease}
     .edit-btn:hover svg{transform:rotate(-90deg)}
-
-    /* controls */
     .panel{
       background:rgba(255,255,255,0.95); border-radius:12px; padding:18px; box-shadow:0 10px 30px rgba(20,20,40,0.12); 
       display:none; position:fixed; top:50%; right:24px; transform:translateY(-50%); width:320px; max-height:90vh; overflow-y:auto;
@@ -59,388 +52,276 @@
     .swatch:hover{transform:scale(1.15); box-shadow:0 4px 12px rgba(0,0,0,0.2)}
     .swatch.active:after{content:'✓'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; text-shadow:0 1px 3px rgba(0,0,0,0.5)}
     .meta{margin-top:12px; color:#666; font-size:13px}
-
-    /* animations */
-    @keyframes fadeInUp{
-      from{opacity:0; transform:translateY(30px)}
-      to{opacity:1; transform:translateY(0)}
-    }
-    @keyframes slideInRight{
-      from{opacity:0; transform:translateY(-50%) translateX(30px)}
-      to{opacity:1; transform:translateY(-50%) translateX(0)}
-    }
-    @keyframes float{
-      0%, 100%{transform:translateY(0) rotate(-2deg)}
-      50%{transform:translateY(-10px) rotate(-2deg)}
-    }
-    @keyframes sparkle{
-      0%, 100%{opacity:0; transform:scale(0) rotate(0deg)}
-      50%{opacity:1; transform:scale(1) rotate(180deg)}
-    }
-    @keyframes confetti{
-      0%{transform:translateY(-100vh) rotate(0deg); opacity:1}
-      100%{transform:translateY(100vh) rotate(720deg); opacity:0}
-    }
+    @keyframes fadeInUp{from{opacity:0; transform:translateY(30px)} to{opacity:1; transform:translateY(0)}}
+    @keyframes slideInRight{from{opacity:0; transform:translateY(-50%) translateX(30px)} to{opacity:1; transform:translateY(-50%) translateX(0)}}
+    @keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)} 50%{transform:translateY(-10px) rotate(-2deg)}}
+    @keyframes sparkle{0%,100%{opacity:0; transform:scale(0) rotate(0deg)} 50%{opacity:1; transform:scale(1) rotate(180deg)}}
+    @keyframes confetti{0%{transform:translateY(-100vh) rotate(0deg); opacity:1} 100%{transform:translateY(100vh) rotate(720deg); opacity:0}}
     body{animation:fadeInUp 0.8s ease-out}
     .note-wrap{animation:fadeInUp 1s ease-out 0.2s backwards}
     .note{animation:float 4s ease-in-out infinite}
-    .sparkle{
-      position:absolute; width:6px; height:6px; background:white; border-radius:50%;
-      pointer-events:none; animation:sparkle 3s ease-in-out infinite;
-      box-shadow:0 0 10px rgba(255,255,255,0.8);
-    }
-    .confetti{
-      position:fixed; width:10px; height:10px; pointer-events:none;
-      animation:confetti 3s linear forwards; z-index:1000;
-    }
-
-    /* music control */
-    .music-btn{
-      position:fixed; bottom:24px; left:24px; width:56px; height:56px; border-radius:50%;
-      background:var(--accent); border:0; cursor:pointer; display:flex; align-items:center;
-      justify-content:center; box-shadow:0 6px 20px rgba(0,0,0,0.2); z-index:200;
-      transition:all .3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
+    .sparkle{position:absolute; width:6px; height:6px; background:white; border-radius:50%; pointer-events:none; animation:sparkle 3s ease-in-out infinite; box-shadow:0 0 10px rgba(255,255,255,0.8);}
+    .confetti{position:fixed; width:10px; height:10px; pointer-events:none; animation:confetti 3s linear forwards; z-index:1000;}
+    .music-btn{position:fixed; bottom:24px; left:24px; width:56px; height:56px; border-radius:50%; background:var(--accent); border:0; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(0,0,0,0.2); z-index:200; transition:all .3s cubic-bezier(0.68, -0.55, 0.265, 1.55);}
     .music-btn:hover{transform:scale(1.15); box-shadow:0 8px 24px rgba(0,0,0,0.3)}
     .music-btn svg{width:24px; height:24px; fill:white; transition:transform .3s ease}
     .music-btn.playing{animation:pulse 1.5s ease-in-out infinite}
     .music-btn.playing svg{animation:spin 3s linear infinite}
-    @keyframes pulse{
-      0%, 100%{box-shadow:0 6px 20px rgba(0,0,0,0.2)}
-      50%{box-shadow:0 6px 30px rgba(255,138,101,0.6), 0 0 40px rgba(255,138,101,0.4)}
-    }
-    @keyframes spin{
-      from{transform:rotate(0deg)}
-      to{transform:rotate(360deg)}
-    }
-
-    /* floating particles */
-    .particle{
-      position:fixed; width:4px; height:4px; background:rgba(255,255,255,0.6);
-      border-radius:50%; pointer-events:none; animation:floatParticle 15s infinite;
-    }
-    @keyframes floatParticle{
-      0%{transform:translateY(100vh) translateX(0) scale(0); opacity:0}
-      10%{opacity:1}
-      90%{opacity:1}
-      100%{transform:translateY(-100vh) translateX(100px) scale(1); opacity:0}
-    }
-
-    /* responsive */
+    @keyframes pulse{0%,100%{box-shadow:0 6px 20px rgba(0,0,0,0.2)} 50%{box-shadow:0 6px 30px rgba(255,138,101,0.6), 0 0 40px rgba(255,138,101,0.4)}}
+    @keyframes spin{from{transform:rotate(0deg)} to{transform:rotate(360deg)}}
+    .particle{position:fixed; width:4px; height:4px; background:rgba(255,255,255,0.6); border-radius:50%; pointer-events:none; animation:floatParticle 15s infinite;}
+    @keyframes floatParticle{0%{transform:translateY(100vh) translateX(0) scale(0); opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{transform:translateY(-100vh) translateX(100px) scale(1); opacity:0}}
     @media (max-width:880px){
       .note{min-height:320px}
       .panel{right:12px; left:12px; width:auto; top:auto; bottom:12px; transform:none; max-height:70vh}
       .panel.show{animation:slideInUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)}
       .music-btn{bottom:16px; left:16px; width:48px; height:48px}
-      @keyframes slideInUp{
-        from{opacity:0; transform:translateY(30px)}
-        to{opacity:1; transform:translateY(0)}
-      }
+      @keyframes slideInUp{from{opacity:0; transform:translateY(30px)} to{opacity:1; transform:translateY(0)}}
     }
   </style>
 </head>
-<body>
+<body data-new-gr-c-s-check-loaded="14.1121.0" data-gr-ext-installed="" data-new-gr-c-s-loaded="14.1121.0">
   <!-- Music button -->
   <button id="musicBtn" class="music-btn playing" aria-label="Phát nhạc" title="Click để tắt nhạc">
-    <svg id="playIcon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:none">
-      <path d="M8 5v14l11-7z"/>
-    </svg>
-    <svg id="pauseIcon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-    </svg>
+    <svg id="playIcon" viewBox="0 0 24 24" style="display:none"><path d="M8 5v14l11-7z"></path></svg>
+    <svg id="pauseIcon" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"></path></svg>
   </button>
-
-  <audio id="bgMusic" loop>
+  <audio id="bgMusic" loop="">
     <source src="https://api.nhaanvux.online/assets/music/background-music.mp3" type="audio/mpeg">
   </audio>
-
   <div class="wrap">
     <div class="note-wrap">
-      <div id="note" class="note" role="region" aria-label="Preview note">
-        <div class="title" id="noteTitle">Gửi đội tuyển tin</div>
-        <div class="content" id="noteContent">Chúc các thành viên đội tuyển Tin học tự tin, bình tĩnh và tỏa sáng trong kì thi chọn đội dự tuyển HSG Quốc gia! Hãy phát huy hết khả năng, tư duy logic sắc bén và tinh thần đồng đội vững mạnh. Chúc các bạn đạt kết quả cao và mang vinh quang về cho đội tuyển!</div>
+      <div id="note" class="note" style="background: rgb(255, 246, 178); font-family: Inter, system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto;">
+        <div class="title" id="noteTitle">Lời chúc gửi đội tuyển Địa lí 🗺️🌏,</div>
+        <div class="content" id="noteContent">Các bạn đội tuyển Điệp viên(SPY) thân mến,
+Hành trình học tập của các bạn giống như một chuyến đi dọc dài đất nước và thế giới – qua từng miền núi cao, đồng bằng, biển đảo; qua cả những trang Atlat đầy số liệu và màu sắc. Trước thềm kì thi quan trọng sắp tới, chúc các bạn vững vàng như dãy Trường Sơn, sắc bén như dòng sông không ngừng bồi đắp, rộng mở như biển Đông bao la. Hãy để kiến thức tích luỹ suốt bao năm học tập trở thành bản đồ chỉ dẫn, giúp các bạn tự tin vượt qua mọi thử thách.Dù kết quả thế nào, các bạn đã khẳng định tình yêu với Địa lí – môn học giúp ta hiểu quê hương, hiểu thế giới và chính mình. Mong rằng đội tuyển Địa sẽ ghi thêm những “toạ độ vàng” trên bản đồ thành tích của trường!</div>
         <div class="signature">-By Đội Tuyển Tin-</div>
       </div>
-      <button id="editBtn" class="edit-btn" aria-label="Chỉnh sửa" title="Chỉnh sửa Note">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-        </svg>
+      <button id="editBtn" class="edit-btn" title="Chỉnh sửa Note">
+        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>
       </button>
     </div>
-
-    <div class="panel" aria-hidden="false">
+    <div class="panel show"><grammarly-extension data-grammarly-shadow-root="true" class="dnXmp" style="position: absolute; top: 0px; left: 0px; pointer-events: none; --rem: 16;"></grammarly-extension><grammarly-extension data-grammarly-shadow-root="true" class="dnXmp" style="position: absolute; top: 0px; left: 0px; pointer-events: none; --rem: 16;"></grammarly-extension>
       <h3>Chỉnh sửa Note</h3>
-
       <label for="titleInput">Tiêu đề</label>
-      <input id="titleInput" type="text" placeholder="Ví dụ: Gửi đội tuyển tin" />
-
-      <label for="contentInput">Nội dung (dùng Enter để xuống dòng)</label>
-      <textarea id="contentInput" placeholder="Viết lời chúc..." ></textarea>
-
+      <input id="titleInput" type="text" value="Nhân Vũ ">
+      <label for="contentInput">Nội dung</label>
+      <textarea id="contentInput" spellcheck="true" aria-label="To enrich screen reader interactions, please activate Accessibility in Grammarly extension settings">Chúc các thành viên đội tuyển Tin học tự tin, bình tĩnh và tỏa sáng trong kì thi chọn đội dự tuyển HSG Quốc gia! Hãy phát huy hết khả năng, tư duy logic sắc bén và tinh thần đồng đội vững mạnh. Chúc các bạn đạt kết quả cao và mang vinh quang về cho đội tuyển!</textarea>
       <label>Màu nền note</label>
       <div class="colors">
-        <button class="swatch active" data-color="#fff6b2" style="background:#fff6b2" title="Vàng nhạt"></button>
-        <button class="swatch" data-color="#ffd7e2" style="background:#ffd7e2" title="Hồng pastel"></button>
-        <button class="swatch" data-color="#d6f8e8" style="background:#d6f8e8" title="Xanh mint"></button>
-        <button class="swatch" data-color="#dfe7ff" style="background:#dfe7ff" title="Xanh lavender"></button>
-        <button class="swatch" data-color="#fff3d1" style="background:#fff3d1" title="Kem"></button>
-        <button class="swatch" data-color="#ffe4e1" style="background:#ffe4e1" title="Hồng đào"></button>
+        <button class="swatch active" data-color="#fff6b2" style="background:#fff6b2"></button>
+        <button class="swatch" data-color="#ffd7e2" style="background:#ffd7e2"></button>
+        <button class="swatch" data-color="#d6f8e8" style="background:#d6f8e8"></button>
+        <button class="swatch" data-color="#dfe7ff" style="background:#dfe7ff"></button>
+        <button class="swatch" data-color="#fff3d1" style="background:#fff3d1"></button>
+        <button class="swatch" data-color="#ffe4e1" style="background:#ffe4e1"></button>
       </div>
-
       <label for="fontSelect">Phông chữ</label>
       <select id="fontSelect">
-        <option value="Inter, system-ui, -apple-system, 'Segoe UI', Roboto">Inter (mặc định)</option>
-        <option value="'Segoe Script', cursive">Segoe Script (viết tay)</option>
-        <option value="Georgia, 'Times New Roman', serif">Georgia (trang trọng)</option>
+        <option value="Inter, system-ui, -apple-system, 'Segoe UI', Roboto">Inter</option>
+        <option value="'Segoe Script', cursive">Segoe Script</option>
+        <option value="Georgia, 'Times New Roman', serif">Georgia</option>
       </select>
-
       <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap">
         <button id="saveBtn" class="btn btn-primary">Lưu (Local)</button>
         <button id="downloadBtn" class="btn btn-ghost">Tải HTML</button>
         <button id="printBtn" class="btn btn-ghost">In / Xuất PDF</button>
         <button id="resetBtn" class="btn btn-ghost">Đặt lại</button>
       </div>
-
-      <div class="meta">© 2025 Đội tuyển Tin</div>
     </div>
   </div>
+<script>
+const STORAGE_KEY = 'note_loi_chuc_v1';
+const DEFAULT_NOTE = {
+  "title": "Lời chúc gửi đội tuyển Địa lí 🗺️🌏,",
+  "content": "Các bạn đội tuyển Điệp viên(SPY) thân mến,\nHành trình học tập của các bạn giống như một chuyến đi dọc dài đất nước và thế giới – qua từng miền núi cao, đồng bằng, biển đảo; qua cả những trang Atlat đầy số liệu và màu sắc. Trước thềm kì thi quan trọng sắp tới, chúc các bạn vững vàng như dãy Trường Sơn, sắc bén như dòng sông không ngừng bồi đắp, rộng mở như biển Đông bao la. Hãy để kiến thức tích luỹ suốt bao năm học tập trở thành bản đồ chỉ dẫn, giúp các bạn tự tin vượt qua mọi thử thách.Dù kết quả thế nào, các bạn đã khẳng định tình yêu với Địa lí – môn học giúp ta hiểu quê hương, hiểu thế giới và chính mình. Mong rằng đội tuyển Địa sẽ ghi thêm những “toạ độ vàng” trên bản đồ thành tích của trường!",
+  "bg": "rgb(255, 246, 178)",
+  "font": "Inter, system-ui, -apple-system, 'Segoe UI', Roboto"
+};
+// Elements
+const note = document.getElementById('note');
+const titleEl = document.getElementById('noteTitle');
+const contentEl = document.getElementById('noteContent');
+const titleInput = document.getElementById('titleInput');
+const contentInput = document.getElementById('contentInput');
+const fontSelect = document.getElementById('fontSelect');
+const swatches = document.querySelectorAll('.swatch');
+const saveBtn = document.getElementById('saveBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const printBtn = document.getElementById('printBtn');
+const resetBtn = document.getElementById('resetBtn');
+const editBtn = document.getElementById('editBtn');
+const panel = document.querySelector('.panel');
+function updatePreview(){
+  titleEl.textContent = titleInput.value || DEFAULT_NOTE.title;
+  contentEl.textContent = contentInput.value || DEFAULT_NOTE.content;
+  note.style.fontFamily = fontSelect.value;
+}
+function updateEditButtonColor(bgColor){
+  const tempDiv = document.createElement('div');
+  tempDiv.style.color = bgColor;
+  document.body.appendChild(tempDiv);
+  const rgb = window.getComputedStyle(tempDiv).color;
+  document.body.removeChild(tempDiv);
+}
+function load() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(raw) {
+    const s = JSON.parse(raw);
+    titleEl.textContent = s.title || DEFAULT_NOTE.title;
+    contentEl.textContent = s.content || DEFAULT_NOTE.content;
+    note.style.background = s.bg || DEFAULT_NOTE.bg;
+    note.style.fontFamily = s.font || DEFAULT_NOTE.font;
+    titleInput.value = s.title || DEFAULT_NOTE.title;
+    contentInput.value = s.content || DEFAULT_NOTE.content;
+    fontSelect.value = s.font || DEFAULT_NOTE.font;
+  } else {
+    titleInput.value = DEFAULT_NOTE.title;
+    contentInput.value = DEFAULT_NOTE.content;
+    note.style.background = DEFAULT_NOTE.bg;
+    note.style.fontFamily = DEFAULT_NOTE.font;
+  }
+}
+resetBtn.addEventListener('click', ()=>{
+  if(!confirm('Đặt lại về mặc định?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  titleInput.value = DEFAULT_NOTE.title;
+  contentInput.value = DEFAULT_NOTE.content;
+  note.style.background = DEFAULT_NOTE.bg;
+  fontSelect.value = DEFAULT_NOTE.font;
+  updatePreview();
+});
+saveBtn.addEventListener('click', ()=>{
+  const payload = {
+    title: titleInput.value,
+    content: contentInput.value,
+    bg: note.style.background || '',
+    font: fontSelect.value
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  saveBtn.textContent = 'Đã lưu ✓';
+  setTimeout(()=>saveBtn.textContent='Lưu (Local)', 1200);
+});
+downloadBtn.addEventListener('click', ()=>{
+  // Lấy dữ liệu hiện tại
+  const currentNote = {
+    title: titleInput.value || DEFAULT_NOTE.title,
+    content: contentInput.value || DEFAULT_NOTE.content,
+    bg: note.style.background || DEFAULT_NOTE.bg,
+    font: fontSelect.value || DEFAULT_NOTE.font
+  };
 
-  <script>
-    // Elements
-    const note = document.getElementById('note');
-    const titleEl = document.getElementById('noteTitle');
-    const contentEl = document.getElementById('noteContent');
-    const titleInput = document.getElementById('titleInput');
-    const contentInput = document.getElementById('contentInput');
-    const fontSelect = document.getElementById('fontSelect');
-    const swatches = document.querySelectorAll('.swatch');
-    const saveBtn = document.getElementById('saveBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const printBtn = document.getElementById('printBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const editBtn = document.getElementById('editBtn');
-    const panel = document.querySelector('.panel');
-    const musicBtn = document.getElementById('musicBtn');
-    const bgMusic = document.getElementById('bgMusic');
-    const playIcon = document.getElementById('playIcon');
-    const pauseIcon = document.getElementById('pauseIcon');
+  // Lấy toàn bộ HTML hiện tại
+  let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
 
-    const STORAGE_KEY = 'note_loi_chuc_v1';
-    let isPlaying = false;
+  // Thay thế DEFAULT_NOTE trong code bằng dữ liệu hiện tại
+  const newDefault = `const DEFAULT_NOTE = ${JSON.stringify(currentNote, null, 2)};`;
+  html = html.replace(/const DEFAULT_NOTE\s*=\s*\{[\s\S]*?\};/, newDefault);
 
-    // Create sparkles
-    function createSparkles(){
-      const wrap = document.querySelector('.note-wrap');
-      for(let i=0; i<12; i++){
-        const sparkle = document.createElement('div');
-        sparkle.className = 'sparkle';
-        sparkle.style.left = Math.random() * 100 + '%';
-        sparkle.style.top = Math.random() * 100 + '%';
-        sparkle.style.animationDelay = Math.random() * 3 + 's';
-        const hue = Math.random() * 60 + 40;
-        sparkle.style.background = `hsl(${hue}, 100%, 70%)`;
-        wrap.appendChild(sparkle);
-      }
-    }
+  // Xuất file
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'note.html';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+printBtn.addEventListener('click', ()=>{
+  window.print();
+});
+swatches.forEach(sw=>{
+  sw.addEventListener('click', ()=>{
+    swatches.forEach(s=>s.classList.remove('active'));
+    sw.classList.add('active');
+    const color = sw.dataset.color;
+    note.style.background = color;
+    updateEditButtonColor(color);
+  });
+});
+titleInput.addEventListener('input', updatePreview);
+contentInput.addEventListener('input', updatePreview);
+fontSelect.addEventListener('change', updatePreview);
+editBtn.addEventListener('click', ()=>{
+  panel.classList.toggle('show');
+});
+// Music
+const musicBtn = document.getElementById('musicBtn');
+const bgMusic = document.getElementById('bgMusic');
+const playIcon = document.getElementById('playIcon');
+const pauseIcon = document.getElementById('pauseIcon');
+bgMusic.volume = 0.4;
+bgMusic.play().catch(()=>{});
+musicBtn.addEventListener('click', ()=>{
+  if(bgMusic.paused){
+    bgMusic.play();
+    musicBtn.classList.add('playing');
+    playIcon.style.display='none';
+    pauseIcon.style.display='block';
+    musicBtn.title="Click để tắt nhạc";
+  } else {
+    bgMusic.pause();
+    musicBtn.classList.remove('playing');
+    playIcon.style.display='block';
+    pauseIcon.style.display='none';
+    musicBtn.title="Click để bật nhạc";
+  }
+});
+// Sparkles
+function spawnSparkles(){
+  for(let i=0;i<15;i++){
+    const s = document.createElement('div');
+    s.className='sparkle';
+    s.style.left = (Math.random()*100)+'%';
+    s.style.top = (Math.random()*100)+'%';
+    s.style.animationDuration = (2+Math.random()*3)+'s';
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(), 4000);
+  }
+}
+setInterval(spawnSparkles, 3000);
+// Confetti
+function throwConfetti(){
+  for(let i=0;i<30;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.style.left=(Math.random()*100)+'vw';
+    c.style.top='-10px';
+    c.style.background=`hsl(${Math.random()*360},70%,60%)`;
+    c.style.animationDuration=(2+Math.random()*3)+'s';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), 5000);
+  }
+}
+setTimeout(throwConfetti,1000);
+// Floating particles
+for(let i=0;i<20;i++){
+  const p=document.createElement('div');
+  p.className='particle';
+  p.style.left=(Math.random()*100)+'vw';
+  p.style.animationDuration=(10+Math.random()*10)+'s';
+  p.style.animationDelay=(Math.random()*10)+'s';
+  document.body.appendChild(p);
+}
+// Init
+load();
+updatePreview();
+</script><div class="particle" style="left: 70.7094vw; animation-duration: 10.6823s; animation-delay: 9.07042s;"></div><div class="particle" style="left: 8.33338vw; animation-duration: 13.5426s; animation-delay: 4.81299s;"></div><div class="particle" style="left: 24.8427vw; animation-duration: 17.9108s; animation-delay: 5.54867s;"></div><div class="particle" style="left: 18.3971vw; animation-duration: 19.3173s; animation-delay: 7.35847s;"></div><div class="particle" style="left: 25.5276vw; animation-duration: 18.6479s; animation-delay: 8.83788s;"></div><div class="particle" style="left: 61.2098vw; animation-duration: 13.0088s; animation-delay: 5.67154s;"></div><div class="particle" style="left: 1.67191vw; animation-duration: 11.0856s; animation-delay: 4.66566s;"></div><div class="particle" style="left: 69.9003vw; animation-duration: 18.3013s; animation-delay: 9.64309s;"></div><div class="particle" style="left: 72.9037vw; animation-duration: 18.4625s; animation-delay: 6.97724s;"></div><div class="particle" style="left: 89.3203vw; animation-duration: 17.168s; animation-delay: 1.03475s;"></div><div class="particle" style="left: 48.7578vw; animation-duration: 14.3665s; animation-delay: 1.33839s;"></div><div class="particle" style="left: 31.1548vw; animation-duration: 16.0252s; animation-delay: 6.15939s;"></div><div class="particle" style="left: 26.243vw; animation-duration: 18.7501s; animation-delay: 7.14969s;"></div><div class="particle" style="left: 82.6862vw; animation-duration: 11.0272s; animation-delay: 9.58209s;"></div><div class="particle" style="left: 47.9643vw; animation-duration: 16.6008s; animation-delay: 3.2163s;"></div><div class="particle" style="left: 64.4835vw; animation-duration: 14.616s; animation-delay: 4.38372s;"></div><div class="particle" style="left: 2.59532vw; animation-duration: 15.1529s; animation-delay: 2.13911s;"></div><div class="particle" style="left: 35.0584vw; animation-duration: 13.8632s; animation-delay: 9.39793s;"></div><div class="particle" style="left: 6.90846vw; animation-duration: 16.9095s; animation-delay: 2.08003s;"></div><div class="particle" style="left: 28.6892vw; animation-duration: 18.9273s; animation-delay: 5.68643s;"></div><div class="particle" style="left: 43.5543vw; animation-duration: 15.7461s; animation-delay: 3.23266s;"></div><div class="particle" style="left: 98.4265vw; animation-duration: 10.9358s; animation-delay: 7.05635s;"></div><div class="particle" style="left: 51.7717vw; animation-duration: 16.3634s; animation-delay: 6.81687s;"></div><div class="particle" style="left: 21.6255vw; animation-duration: 14.3759s; animation-delay: 7.22352s;"></div><div class="particle" style="left: 32.8138vw; animation-duration: 16.3403s; animation-delay: 1.0631s;"></div><div class="particle" style="left: 2.04819vw; animation-duration: 10.7782s; animation-delay: 6.0925s;"></div><div class="particle" style="left: 41.7059vw; animation-duration: 17.9285s; animation-delay: 2.68484s;"></div><div class="particle" style="left: 20.1394vw; animation-duration: 18.2486s; animation-delay: 4.54252s;"></div><div class="particle" style="left: 47.7841vw; animation-duration: 10.9208s; animation-delay: 1.05029s;"></div><div class="particle" style="left: 90.7878vw; animation-duration: 15.2328s; animation-delay: 1.7457s;"></div><div class="particle" style="left: 85.1188vw; animation-duration: 17.6772s; animation-delay: 0.66399s;"></div><div class="particle" style="left: 14.2167vw; animation-duration: 16.3764s; animation-delay: 5.13503s;"></div><div class="particle" style="left: 52.4145vw; animation-duration: 15.4459s; animation-delay: 3.83194s;"></div><div class="particle" style="left: 98.0527vw; animation-duration: 17.4525s; animation-delay: 7.31655s;"></div><div class="particle" style="left: 28.1048vw; animation-duration: 16.2479s; animation-delay: 9.29855s;"></div><div class="particle" style="left: 21.2593vw; animation-duration: 16.926s; animation-delay: 4.10233s;"></div><div class="particle" style="left: 51.9647vw; animation-duration: 11.1042s; animation-delay: 9.57173s;"></div><div class="particle" style="left: 79.6414vw; animation-duration: 13.5101s; animation-delay: 6.30869s;"></div><div class="particle" style="left: 52.6179vw; animation-duration: 18.1907s; animation-delay: 9.96402s;"></div><div class="particle" style="left: 70.9546vw; animation-duration: 19.8802s; animation-delay: 8.6166s;"></div>
 
-    // Create floating particles
-    function createParticles(){
-      for(let i=0; i<15; i++){
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 15 + 's';
-        particle.style.animationDuration = (10 + Math.random() * 10) + 's';
-        document.body.appendChild(particle);
-      }
-    }
 
-    // Create confetti effect
-    function createConfetti(){
-      const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#a29bfe'];
-      for(let i=0; i<30; i++){
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        confetti.style.left = Math.random() * 100 + '%';
-        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.animationDelay = Math.random() * 0.5 + 's';
-        confetti.style.animationDuration = (2 + Math.random() * 1) + 's';
-        document.body.appendChild(confetti);
-        setTimeout(() => confetti.remove(), 3500);
-      }
-    }
-
-    // Auto play music on load
-    window.addEventListener('load', () => {
-      bgMusic.play().then(() => {
-        isPlaying = true;
-        musicBtn.classList.add('playing');
-        playIcon.style.display = 'none';
-        pauseIcon.style.display = 'block';
-        musicBtn.title = 'Click để tắt nhạc';
-      }).catch(e => {
-        console.log('Trình duyệt chặn auto-play:', e);
-        isPlaying = false;
-        musicBtn.classList.remove('playing');
-        playIcon.style.display = 'block';
-        pauseIcon.style.display = 'none';
-        musicBtn.title = 'Click để bật nhạc';
-      });
-    });
-
-    // Music control
-    musicBtn.addEventListener('click', ()=>{
-      if(isPlaying){
-        bgMusic.pause();
-        playIcon.style.display = 'block';
-        pauseIcon.style.display = 'none';
-        musicBtn.classList.remove('playing');
-        musicBtn.title = 'Click để bật nhạc';
-      } else {
-        bgMusic.play().catch(e => console.log('Không thể phát nhạc:', e));
-        playIcon.style.display = 'none';
-        pauseIcon.style.display = 'block';
-        musicBtn.classList.add('playing');
-        musicBtn.title = 'Click để tắt nhạc';
-      }
-      isPlaying = !isPlaying;
-    });
-
-    // Set volume
-    bgMusic.volume = 0.3;
-
-    // Toggle panel
-    editBtn.addEventListener('click', ()=>{
-      panel.classList.toggle('show');
-    });
-
-    // Update edit button color based on note background
-    function updateEditButtonColor(bgColor){
-      const tempDiv = document.createElement('div');
-      tempDiv.style.color = bgColor;
-      document.body.appendChild(tempDiv);
-      const rgb = window.getComputedStyle(tempDiv).color;
-      document.body.removeChild(tempDiv);
-      
-      const values = rgb.match(/\d+/g);
-      if(values){
-        const r = parseInt(values[0]);
-        const g = parseInt(values[1]);
-        const b = parseInt(values[2]);
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        
-        if(brightness > 200){
-          editBtn.style.background = '#ff6b6b';
-        } else if(brightness > 150){
-          editBtn.style.background = '#e74c3c';
-        } else {
-          editBtn.style.background = '#ff8a65';
-        }
-      }
-    }
-
-    // Load defaults or saved
-    function load() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(raw) {
-        try { const s = JSON.parse(raw);
-          titleEl.textContent = s.title || titleEl.textContent;
-          contentEl.textContent = s.content || contentEl.textContent;
-          const bgColor = s.bg || getComputedStyle(document.documentElement).getPropertyValue('--note');
-          note.style.background = bgColor;
-          updateEditButtonColor(bgColor);
-          note.style.fontFamily = s.font || '';
-          titleInput.value = s.title || titleInput.value;
-          contentInput.value = s.content || contentInput.value;
-          fontSelect.value = s.font || fontSelect.value;
-          
-          swatches.forEach(sw => {
-            sw.classList.remove('active');
-            if(sw.dataset.color === s.bg) sw.classList.add('active');
-          });
-        } catch(e){console.warn('Không thể đọc lưu trữ', e)}
-      } else {
-        titleInput.value = titleEl.textContent;
-        contentInput.value = contentEl.textContent;
-      }
-    }
-
-    // Update preview
-    function updatePreview(){
-      titleEl.textContent = titleInput.value || 'Gửi đội tuyển tin,';
-      contentEl.textContent = contentInput.value || 'Chúc các thành viên đội tuyển Tin học tự tin, bình tĩnh và tỏa sáng trong kì thi chọn đội dự tuyển HSG Quốc gia! Hãy phát huy hết khả năng, tư duy logic sắc bén và tinh thần đồng đội vững mạnh. Chúc các bạn đạt kết quả cao và mang vinh quang về cho đội tuyển!';
-      note.style.fontFamily = fontSelect.value;
-    }
-
-    // events
-    titleInput.addEventListener('input', updatePreview);
-    contentInput.addEventListener('input', updatePreview);
-    fontSelect.addEventListener('change', updatePreview);
-
-    swatches.forEach(s => s.addEventListener('click', () => {
-      const c = s.dataset.color;
-      note.style.background = c;
-      updateEditButtonColor(c);
-      swatches.forEach(sw => sw.classList.remove('active'));
-      s.classList.add('active');
-      
-      // Add pulse effect to note
-      note.style.transform = 'rotate(-2deg) scale(1.05)';
-      setTimeout(() => {
-        note.style.transform = 'rotate(-2deg) scale(1)';
-      }, 200);
-    }));
-
-    saveBtn.addEventListener('click', ()=>{
-      const payload = {
-        title: titleInput.value,
-        content: contentInput.value,
-        bg: note.style.background || '',
-        font: fontSelect.value
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-      saveBtn.textContent = 'Đã lưu ✓';
-      createConfetti();
-      setTimeout(()=> saveBtn.textContent = 'Lưu (Local)', 1500);
-    });
-
-    downloadBtn.addEventListener('click', ()=>{
-      const doc = `<!doctype html><meta charset=\"utf-8\"><title>Note - Lời chúc</title><style>body{margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:#f6f6f6} .note{padding:28px;border-radius:14px;max-width:800px;white-space:pre-wrap; font-family:${fontSelect.value}; background:${note.style.background || '#fff6b2'}} .signature{text-align:center;margin-top:24px;font-size:14px;color:#666;font-style:italic}</style><div class=\"note\"><h2>${escapeHtml(titleInput.value)}</h2><div>${escapeHtml(contentInput.value).replace(/\n/g,'<br>')}</div><div class=\"signature\">-By Đội Tuyển Tin-</div></div>`;
-      const blob = new Blob([doc], {type:'text/html'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'loi-chuc-note.html'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-      createConfetti();
-    });
-
-    printBtn.addEventListener('click', ()=>{
-      const w = window.open('', '_blank');
-      const html = `<!doctype html><meta charset=\"utf-8\"><title>In lời chúc</title><style>body{margin:40px;font-family:${fontSelect.value}} .signature{text-align:center;margin-top:24px;font-size:14px;color:#666;font-style:italic}</style><div>${escapeHtml(titleInput.value)}<br><br>${escapeHtml(contentInput.value).replace(/\n/g,'<br>')}<div class=\"signature\">-By Đội Tuyển Tin-</div></div>`;
-      w.document.open(); w.document.write(html); w.document.close();
-      setTimeout(()=> w.print(), 300);
-    });
-
-    resetBtn.addEventListener('click', ()=>{
-      if(!confirm('Bạn có chắc muốn đặt lại về mặc định?')) return;
-      localStorage.removeItem(STORAGE_KEY);
-      titleInput.value = 'Gửi đội tuyển tin,';
-      contentInput.value = 'Chúc các thành viên đội tuyển Tin học tự tin, bình tĩnh và tỏa sáng trong kì thi chọn đội dự tuyển HSG Quốc gia! Hãy phát huy hết khả năng, tư duy logic sắc bén và tinh thần đồng đội vững mạnh. Chúc các bạn đạt kết quả cao và mang vinh quang về cho đội tuyển!';
-      note.style.background = '#fff6b2';
-      updateEditButtonColor('#fff6b2');
-      fontSelect.value = "Inter, system-ui, -apple-system, 'Segoe UI', Roboto";
-      swatches.forEach(sw => sw.classList.remove('active'));
-      swatches[0].classList.add('active');
-      updatePreview();
-    });
-
-    // helpers
-    function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;'); }
-
-    // initialize
-    createSparkles();
-    createParticles();
-    load(); 
-    updatePreview();
-  </script>
-</body>
-</html>
+<audio class="audio-output" style="display: none;"></audio><div id="volume-booster-visusalizer">
+                    <div class="sound">
+                        <div class="sound-icon"></div>
+                        <div class="sound-wave sound-wave_one"></div>
+                        <div class="sound-wave sound-wave_two"></div>
+                        <div class="sound-wave sound-wave_three"></div>
+                    </div>
+                    <div class="segments-box">
+                        <div data-range="1-20" class="segment"><span></span></div>
+                        <div data-range="21-40" class="segment"><span></span></div>
+                        <div data-range="41-60" class="segment"><span></span></div>
+                        <div data-range="61-80" class="segment"><span></span></div>
+                        <div data-range="81-100" class="segment"><span></span></div>
+                    </div>
+                </div><div class="confetti" style="left: 8.69456vw; top: -10px; background: rgb(224, 126, 82); animation-duration: 2.63416s;"></div><div class="confetti" style="left: 17.182vw; top: -10px; background: rgb(224, 82, 187); animation-duration: 3.47104s;"></div><div class="confetti" style="left: 18.9221vw; top: -10px; background: rgb(224, 82, 203); animation-duration: 3.817s;"></div><div class="confetti" style="left: 64.7746vw; top: -10px; background: rgb(224, 82, 151); animation-duration: 4.69157s;"></div><div class="confetti" style="left: 54.6846vw; top: -10px; background: rgb(224, 82, 212); animation-duration: 2.73949s;"></div><div class="confetti" style="left: 32.8261vw; top: -10px; background: rgb(224, 115, 82); animation-duration: 2.49591s;"></div><div class="confetti" style="left: 85.6201vw; top: -10px; background: rgb(224, 82, 186); animation-duration: 3.2739s;"></div><div class="confetti" style="left: 83.7951vw; top: -10px; background: rgb(224, 139, 82); animation-duration: 4.66905s;"></div><div class="confetti" style="left: 30.0775vw; top: -10px; background: rgb(211, 224, 82); animation-duration: 2.86907s;"></div><div class="confetti" style="left: 19.0388vw; top: -10px; background: rgb(224, 82, 139); animation-duration: 3.78695s;"></div><div class="confetti" style="left: 83.5288vw; top: -10px; background: rgb(224, 122, 82); animation-duration: 3.07167s;"></div><div class="confetti" style="left: 63.412vw; top: -10px; background: rgb(224, 163, 82); animation-duration: 3.88355s;"></div><div class="confetti" style="left: 40.3118vw; top: -10px; background: rgb(82, 224, 174); animation-duration: 4.0779s;"></div><div class="confetti" style="left: 94.8219vw; top: -10px; background: rgb(224, 82, 145); animation-duration: 4.34931s;"></div><div class="confetti" style="left: 53.2535vw; top: -10px; background: rgb(89, 224, 82); animation-duration: 2.31135s;"></div><div class="confetti" style="left: 98.7796vw; top: -10px; background: rgb(224, 136, 82); animation-duration: 2.9295s;"></div><div class="confetti" style="left: 27.919vw; top: -10px; background: rgb(82, 224, 219); animation-duration: 2.29517s;"></div><div class="confetti" style="left: 4.11572vw; top: -10px; background: rgb(82, 185, 224); animation-duration: 3.56697s;"></div><div class="confetti" style="left: 3.11807vw; top: -10px; background: rgb(82, 224, 148); animation-duration: 3.38112s;"></div><div class="confetti" style="left: 35.9311vw; top: -10px; background: rgb(224, 82, 145); animation-duration: 2.98871s;"></div><div class="confetti" style="left: 32.7526vw; top: -10px; background: rgb(163, 224, 82); animation-duration: 3.28571s;"></div><div class="confetti" style="left: 65.9482vw; top: -10px; background: rgb(134, 82, 224); animation-duration: 2.19469s;"></div><div class="confetti" style="left: 16.9268vw; top: -10px; background: rgb(224, 82, 99); animation-duration: 3.15973s;"></div><div class="confetti" style="left: 22.1938vw; top: -10px; background: rgb(224, 143, 82); animation-duration: 3.02279s;"></div><div class="confetti" style="left: 89.0977vw; top: -10px; background: rgb(224, 130, 82); animation-duration: 3.43517s;"></div><div class="confetti" style="left: 51.2384vw; top: -10px; background: rgb(224, 153, 82); animation-duration: 3.58514s;"></div><div class="confetti" style="left: 13.2941vw; top: -10px; background: rgb(82, 178, 224); animation-duration: 3.55682s;"></div><div class="confetti" style="left: 97.525vw; top: -10px; background: rgb(82, 224, 126); animation-duration: 3.62513s;"></div><div class="confetti" style="left: 99.624vw; top: -10px; background: rgb(82, 111, 224); animation-duration: 3.33832s;"></div><div class="confetti" style="left: 56.9649vw; top: -10px; background: rgb(82, 224, 203); animation-duration: 4.56988s;"></div><div class="sparkle" style="left: 6.41188%; top: 26.1073%; animation-duration: 3.38035s;"></div><div class="sparkle" style="left: 23.5119%; top: 9.26435%; animation-duration: 4.05028s;"></div><div class="sparkle" style="left: 4.04176%; top: 36.8675%; animation-duration: 2.23326s;"></div><div class="sparkle" style="left: 13.0219%; top: 70.6337%; animation-duration: 3.98688s;"></div><div class="sparkle" style="left: 47.3629%; top: 95.9037%; animation-duration: 2.12133s;"></div><div class="sparkle" style="left: 54.8352%; top: 2.94021%; animation-duration: 4.34268s;"></div><div class="sparkle" style="left: 72.4884%; top: 84.7068%; animation-duration: 3.37979s;"></div><div class="sparkle" style="left: 59.7417%; top: 14.1419%; animation-duration: 2.54336s;"></div><div class="sparkle" style="left: 73.3214%; top: 29.3041%; animation-duration: 2.02663s;"></div><div class="sparkle" style="left: 39.2968%; top: 12.733%; animation-duration: 2.79483s;"></div><div class="sparkle" style="left: 33.8772%; top: 62.7457%; animation-duration: 4.48825s;"></div><div class="sparkle" style="left: 13.7472%; top: 0.139606%; animation-duration: 3.88478s;"></div><div class="sparkle" style="left: 85.8595%; top: 77.6109%; animation-duration: 3.06001s;"></div><div class="sparkle" style="left: 12.7861%; top: 44.7873%; animation-duration: 3.67839s;"></div><div class="sparkle" style="left: 65.5783%; top: 35.2026%; animation-duration: 4.90138s;"></div>
+<div class="sparkle" style="left: 8.99964%; top: 67.2504%; animation-duration: 2.12628s;"></div><div class="sparkle" style="left: 52.2417%; top: 43.4692%; animation-duration: 3.60117s;"></div><div class="sparkle" style="left: 66.989%; top: 77.7952%; animation-duration: 2.66622s;"></div><div class="sparkle" style="left: 99.4714%; top: 18.3735%; animation-duration: 2.00643s;"></div><div class="sparkle" style="left: 38.0123%; top: 2.71806%; animation-duration: 4.2029s;"></div><div class="sparkle" style="left: 82.8775%; top: 52.8454%; animation-duration: 3.1289s;"></div><div class="sparkle" style="left: 90.8487%; top: 16.0949%; animation-duration: 2.36953s;"></div><div class="sparkle" style="left: 56.0549%; top: 44.3634%; animation-duration: 2.89542s;"></div><div class="sparkle" style="left: 16.4302%; top: 80.8846%; animation-duration: 2.74946s;"></div><div class="sparkle" style="left: 24.6528%; top: 58.7169%; animation-duration: 3.00564s;"></div><div class="sparkle" style="left: 89.6481%; top: 60.0557%; animation-duration: 4.62043s;"></div><div class="sparkle" style="left: 31.1117%; top: 10.4829%; animation-duration: 4.49924s;"></div><div class="sparkle" style="left: 50.6867%; top: 35.7714%; animation-duration: 3.01767s;"></div><div class="sparkle" style="left: 44.2002%; top: 16.5926%; animation-duration: 4.37917s;"></div><div class="sparkle" style="left: 75.48%; top: 85.6768%; animation-duration: 4.86987s;"></div></body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration><grammarly-mirror data-grammarly-shadow-root="true" class="dnXmp" style="--rem: 16;"></grammarly-mirror><grammarly-popups data-grammarly-shadow-root="true" class="dnXmp" style="--rem: 16;"></grammarly-popups></html>
